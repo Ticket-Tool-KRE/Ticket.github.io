@@ -9,8 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.15.0/babel.min.js"></script>
     <style>
-      body { font-family: sans-serif; background-color: #f9fafb; padding: 20px; }
-      input, textarea, button { width: 100%; }
+            input, textarea, button { width: 100%; }
       table { width: 100%; margin-top: 20px; border-collapse: collapse; }
       th, td { border: 1px solid #ddd; padding: 8px; }
       img { max-height: 64px; }
