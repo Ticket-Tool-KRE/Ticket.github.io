@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ticket Management Tool</title>
+    <script src="https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.15.0/babel.min.js"></script>
+    <style>
+      body { font-family: sans-serif; background-color: #f9fafb; padding: 20px; }
+      input, textarea, button { width: 100%; }
+      table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+      th, td { border: 1px solid #ddd; padding: 8px; }
+      img { max-height: 64px; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const {{ useState }} = React;
+
+      function TicketManager() {{
+        const [tickets, setTickets] = useState([]);
+        const [title, setTitle] = useState("");
+        const [description, setDescription] = useState("");
+        const [assignee, setAssignee] = useState("");
+        const [screenshot, setScreenshot] = useState(null);
+
+        const createTicket = () => {{
+          if (title.trim() && description.trim()) {{
+            if (screenshot) {{
+              const reader = new FileReader();
+              reader.onload = (e) => {{
+                const newTicket = {{
+                  id: Date.now(),
+                  title,
+                  description,
+                  assignee,
+                  screenshot: e.target.result,
+                  status: "Open",
+                }};
+                setTickets((prev) => [newTicket, ...prev]);
+                resetForm();
+              }};
+              reader.readAsDataURL(screenshot);
+            }} else {{
+              const newTicket = {{
+                id: Date.now(),
+                title,
+                description,
+                assignee,
+                screenshot: null,
+                status: "Open",
+              }};
+              setTickets((prev) => [newTicket, ...prev]);
+              resetForm();
+            }}
+          }}
+        }};
+
+        const resetForm = () => {{
+          setTitle("");
+          setDescription("");
+          setAssignee("");
+          setScreenshot(null);
+          document.getElementById("screenshot")?.value = "";
+        }};
+
+        const closeTicket = (id) => {{
+          setTickets(
+            tickets.map((ticket) =>
+              ticket.id === id ? {{ ...ticket, status: "Closed" }} : ticket
+            )
+          );
+        }};
+
+        return (
+          <div>
+            <h1>Ticket Management Tool</h1>
+            <div>
+              <input placeholder="Ticket Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+              <textarea placeholder="Ticket Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+              <input placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
+              <input id="screenshot" type="file" accept="image/*" onChange={(e) => setScreenshot(e.target.files[0])} />
+              <button onClick={createTicket}>Create Ticket</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th>Assignee</th>
+                  <th>Screenshot</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tickets.map((ticket) => (
+                  <tr key={ticket.id}>
+                    <td>{ticket.title}</td>
+                    <td>{ticket.description}</td>
+                    <td>{ticket.assignee}</td>
+                    <td>{ticket.screenshot && <img src={ticket.screenshot} alt="Screenshot" />}</td>
+                    <td>{ticket.status}</td>
+                    <td>
+                      {ticket.status === "Open" && (
+                        <button onClick={() => closeTicket(ticket.id)}>Close</button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      }}
+
+      ReactDOM.render(<TicketManager />, document.getElementById("root"));
+    </script>
+  </body>
+</html>
